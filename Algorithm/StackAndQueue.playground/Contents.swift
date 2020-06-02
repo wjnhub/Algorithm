@@ -150,3 +150,99 @@ queue.dequeue()
 queue.peek // nil
 
 
+/**
+ 用栈实现队列
+ */
+
+struct StackToQueue {
+    var stackA: MyStack<Any>
+    var stackB: MyStack<Any>
+    
+    init() {
+        stackA = MyStack()
+        stackB = MyStack()
+    }
+    
+    var isEmpty: Bool {
+        return stackA.isEmpty && stackB.isEmpty
+    }
+    var peek: Any? {
+        mutating get {
+            shift()
+            return stackB.peek
+        }
+    }
+    var size: Int {
+        get {
+            return stackA.size + stackB.size
+        }
+    }
+    
+    mutating func enqueue(object: Any) {
+        stackA.push(object)
+    }
+    
+    mutating func dequeue() -> Any? {
+        shift()
+        return stackB.pop()
+    }
+    // 将栈A中的元素从尾部弹出入栈给B 实现元素的翻转
+    fileprivate mutating func shift() {
+        if stackB.isEmpty {
+            while !stackA.isEmpty {
+                stackB.push(stackA.pop()!)
+            }
+        }
+    }
+}
+
+/**
+ 用队列实现栈
+ */
+struct QueueToStack {
+    var queueA: MyQueue<Any>
+    var queueB: MyQueue<Any>
+    
+    init() {
+        queueA = MyQueue()
+        queueB = MyQueue()
+    }
+    
+    var isEmpty: Bool {
+        return queueA.isEmpty && queueB.isEmpty
+    }
+    var peek: Any? {
+        mutating get {
+            shift()
+            let peekObj = queueA.peek
+            queueB.enqueue(queueA.dequeue()!)
+            swap()
+            return peekObj
+        }
+    }
+    var size: Int {
+        return queueA.size
+    }
+    
+    mutating func push(object: Any) {
+        queueA.enqueue(object)
+    }
+    
+    mutating func pop() -> Any? {
+        shift()
+        let popObject = queueA.dequeue()
+        swap()
+        return popObject
+    }
+    
+    // 元素翻转
+   fileprivate mutating func shift() {
+        while queueA.size != 1 {
+            queueB.enqueue(queueB.dequeue()!)
+        }
+   }
+    // 元组交换
+    private mutating func swap() {
+        (queueA, queueB) = (queueB, queueA)
+    }
+}
